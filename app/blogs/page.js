@@ -9,7 +9,7 @@ export default function page() {
         href="/"
         className="bg-accent text-secondary m-4 px-6 py-3 rounded-md"
       >
-        Go back
+        Go Home
       </Link>
     </div>
   );

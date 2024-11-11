@@ -12,7 +12,27 @@ module.exports = {
         secondary: "rgb(var(--color-secondary))",
         accent: "rgb(var(--color-accent))",
       },
+      typography: {
+        DEFAULT: {
+          css: {
+            "span.accent": {
+              color: "rgb(var(--color-accent))",
+            },
+          },
+        },
+      },
+    },
+    hljs: {
+      theme: "github-dark",
     },
   },
-  plugins: [],
+  plugins: [
+    require("@tailwindcss/typography"),
+    require("tailwind-highlightjs"),
+  ],
+  safelist: [
+    {
+      pattern: /hljs+/,
+    },
+  ],
 };

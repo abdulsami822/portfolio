@@ -1,3 +1,4 @@
+import React from "react";
 import Image from "next/image";
 import NextjsIcon from "@/public/techicons/nextjs.svg";
 import ReactjsIcon from "@/public/techicons/reactjs.svg";
@@ -13,7 +14,7 @@ import { MdMail } from "react-icons/md";
 import Link from "next/link";
 import Featureblogs from "@/components/featureblogs";
 
-export default function Home() {
+export default function page() {
   return (
     <main className="max-w-screen-lg mx-auto ">
       <div className="py-10 px-6">
@@ -35,7 +36,20 @@ export default function Home() {
           </div>
         </section>
         <hr className="my-6 w-full border-secondary/20" />
-        <Featureblogs />
+        <section>
+          <h2 className="font-semibold text-lg md:text-xl">
+            My current tech stack 😎
+          </h2>
+          <div className="flex flex-wrap md:flex-row gap-8 items-center mt-6">
+            <NextjsIcon className="text-3xl  md:text-5xl" />
+            <TailwindIcon className="text-3xl md:text-5xl" />
+            <RadixUIIcon className="text-3xl md:text-5xl" />
+            <ReactjsIcon className="text-3xl md:text-5xl" />
+            <JsIcon className="text-3xl md:text-5xl" />
+            <SassIcon className="text-3xl md:text-5xl" />
+            <VscodeIcon className="text-3xl md:text-5xl" />
+          </div>
+        </section>
         <hr className="my-6 w-full border-secondary/20" />
         <section>
           <h2 className="text-lg md:text-xl font-semibold">
@@ -156,12 +170,75 @@ export default function Home() {
               </li>
             </ul>
           </div>
-          <p className="mt-6">
-            Read more about me{" "}
-            <Link href="/about" className="underline">
-              here
-            </Link>
-          </p>
+        </section>
+        <hr className="my-6 w-full border-secondary/20" />
+        <section>
+          <h2 className="text-lg md:text-xl font-semibold">Projects 👷🔧 </h2>
+          <div className="mt-6">
+            <article>
+              <Link
+                href="https://ambits-admin.vercel.app"
+                target="_blank"
+                className="hover:underline"
+              >
+                <div className="flex items-center gap-1">
+                  <h2>Dashboard for a real estate business</h2>
+                  <MdOutlineOpenInNew className="text-sm inline-block" />
+                </div>
+              </Link>
+              <p className="text-sm text-secondary/70">
+                Nextjs, React table, Shadcn-ui, TailwindCSS, Radix UI, Supabase
+                / SQL
+              </p>
+              <p className="text-secondary/70 mt-2 text-sm">
+                I built an admin dashboard to optimize and scale business
+                processes, utilizing Supabase for managing admin/user roles and
+                RLS policies for database security. The frontend includes
+                user-friendly elements like paginated and searchable tables and
+                forms.
+              </p>
+            </article>
+            <article className="mt-4">
+              <Link
+                href="https://timmy-threejs.vercel.app/"
+                target="_blank"
+                className="hover:underline"
+              >
+                <div className="flex items-center gap-1">
+                  <h2>Timmy</h2>
+                  <MdOutlineOpenInNew className="text-sm inline-block" />
+                </div>
+              </Link>
+              <p className="text-sm text-secondary/70">Three.js, Cannon.js</p>
+              <p className="text-secondary/70 mt-2 text-sm">
+                I was bored on a sunday and made this three.js project, with a
+                interactive character named Timmy. This site currently only
+                works in desktop screens.
+              </p>
+            </article>
+            <article className="mt-4">
+              <Link
+                href="https://github.com/rashid3011/ovs-frontend.git"
+                target="_blank"
+                className="hover:underline"
+              >
+                <div className="flex items-center gap-1">
+                  <h2>Election Application using Blockchain</h2>
+                  <FaGithub className="text-sm inline-block" />
+                  <MdOutlineOpenInNew className="text-sm inline-block" />
+                </div>
+              </Link>
+              <p className="text-sm text-secondary/70">
+                Reactjs, Razorpay SDK, MongoDB, ExpressJs
+              </p>
+              <p className="text-secondary/70 mt-2 text-sm">
+                For my 3rd year B.Tech project, I developed a frontend
+                application for elections, incorporating authentication and
+                authorization, along with Razorpay payment integration.
+              </p>
+            </article>
+          </div>
+          <p></p>
         </section>
       </div>
     </main>

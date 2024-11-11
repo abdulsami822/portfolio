@@ -1,0 +1,205 @@
+# The When, Why, and How of <span className="accent"> Compound Components Pattern </span> in React
+
+<p className="text-end text-accent"> - Abdul Sami</p>
+
+React patterns are techniques that simplify building components and managing data flow in applications. They help developers solve common challenges, like sharing state between components or creating flexible layouts, by following well-structured methods. Using these patterns not only keeps code organized but also makes it easier to scale and adapt, which saves time and reduces errors as your app evolves.
+
+<img src="/blogs/compound-components.png" />
+
+1. [When to use Compound Components](#when-compound-components)
+2. [Why to use Compound Components](#why-compound-components)
+3. [How to use Compound Components](#how-compound-components)
+4. [When not to use Compound Components](#when-not-compound-components)
+5. [Conclusion](#conclusion)
+
+## Compound Components
+
+The Compound Components pattern streamlines React UI development by breaking down complex components into smaller, reusable pieces. It improves code readability, reduces prop drilling, and enhances maintainability by managing shared state via context. This pattern is essential for building scalable, flexible UIs in React. Let’s dive deeper into the topic.
+
+<h3 id="when-compound-components">When to use Compound Components</h3>
+
+When you have a group of components that belong to a single entity such as Tabs, Dropdown Menus, or Modals. Here Tabs can be a combination of parent and child components such as _TabList_ and _TabPanels_ as Children Components and _Tabs_ as a Parent component.
+
+<h3 id="why-compound-components">Why to use Compound Components</h3>
+
+Lets implement Tabs without using Compound Components Pattern and see why it needs to be improved.
+
+```jsx
+import React, { useState } from "react";
+
+const Tabs = () => {
+  const [activeTab, setActiveTab] = useState(0);
+
+  return (
+    <div>
+      <TabList activeTab={activeTab} setActiveTab={setActiveTab} />
+      <TabPanels activeTab={activeTab} />
+    </div>
+  );
+};
+
+const TabList = ({ activeTab, setActiveTab }) => (
+  <div>
+    <Tab
+      label="Tab 1"
+      index={0}
+      isActive={activeTab === 0}
+      onClick={() => setActiveTab(0)}
+    />
+    <Tab
+      label="Tab 2"
+      index={1}
+      isActive={activeTab === 1}
+      onClick={() => setActiveTab(1)}
+    />
+  </div>
+);
+
+const Tab = ({ label, isActive, onClick }) => (
+  <button
+    style={{ fontWeight: isActive ? "bold" : "normal" }}
+    onClick={onClick}
+  >
+    {label}
+  </button>
+);
+
+const TabPanels = ({ activeTab }) => (
+  <div>
+    {activeTab === 0 && <TabPanel>Content for Tab 1</TabPanel>}
+    {activeTab === 1 && <TabPanel>Content for Tab 2</TabPanel>}
+  </div>
+);
+
+const TabPanel = ({ children }) => <div>{children}</div>;
+
+export default function App() {
+  return <Tabs />;
+}
+```
+
+There are issues with the above approach,
+
+#### 1. Re-rendering of Components
+
+In the current approach, each time the activeTab state changes, the following components will re-render:
+
+- Tabs (parent component)
+- TabList
+- Tab (for the clicked tab)
+- TabPanels
+
+While this is a simple and straightforward approach, it could become a problem in more complex applications where re-rendering all child components for every small state change can cause performance bottlenecks, especially if the child components are expensive to render or the state updates frequently.
+
+#### 2. Prop Drilling
+
+_activeTab_ and _setActiveTab_ are passed down multiple levels through props, which becomes harder to manage as the component grows in complexity.
+
+<h3 id="how-compound-components">
+  How to improve this using Compound Components Pattern
+</h3>
+
+Lets implement the Tabs using Compound Components and see how it solves the issues from the simple parent children approach.
+
+#### Example of Optimized Compound Component with Context:
+
+```jsx
+// Tabs.js
+import React, { createContext, useContext, useState } from "react";
+
+// Context to manage the selected tab index
+const TabsContext = createContext();
+
+// Parent Tabs component
+const Tabs = ({ children, defaultIndex = 0 }) => {
+  const [selectedIndex, setSelectedIndex] = useState(defaultIndex);
+
+  return (
+    <TabsContext.Provider value={{ selectedIndex, setSelectedIndex }}>
+      <div className="tabs-container">{children}</div>
+    </TabsContext.Provider>
+  );
+};
+
+// Tab component: individual tabs that the user can click
+const Tab = ({ children, index }) => {
+  const { selectedIndex, setSelectedIndex } = useContext(TabsContext);
+
+  const handleClick = () => {
+    setSelectedIndex(index);
+  };
+
+  const isActive = selectedIndex === index;
+
+  return (
+    <button className={`tab ${isActive ? "active" : ""}`} onClick={handleClick}>
+      {children}
+    </button>
+  );
+};
+
+// Panel component: content associated with each tab, shown when the tab is active
+const Panel = ({ children, index }) => {
+  const { selectedIndex } = useContext(TabsContext);
+
+  return selectedIndex === index ? (
+    <div className="panel">{children}</div>
+  ) : null;
+};
+
+// Panels component: a container for the Panel components
+const Panels = ({ children }) => {
+  return <div className="panels-container">{children}</div>;
+};
+
+// Attach Tab, Panel, and Panels as properties of Tabs
+Tabs.Tab = Tab;
+Tabs.Panel = Panel;
+Tabs.Panels = Panels;
+
+export default Tabs;
+
+// App.js
+import React from 'react';
+import Tabs from './Tabs'; // Import the Tabs component
+
+const App = () => {
+  return (
+    <Tabs defaultIndex={0}>
+      <Tabs.Tab index={0}>Tab 1</Tabs.Tab>
+      <Tabs.Tab index={1}>Tab 2</Tabs.Tab>
+      <Tabs.Tab index={2}>Tab 3</Tabs.Tab>
+
+      <Tabs.Panels>
+        <Tabs.Panel index={0}>Content for Tab 1</Tabs.Panel>
+        <Tabs.Panel index={1}>Content for Tab 2</Tabs.Panel>
+        <Tabs.Panel index={2}>Content for Tab 3</Tabs.Panel>
+      </Tabs.Panels>
+    </Tabs>
+  );
+};
+
+export default App;
+
+```
+
+#### Why is this better
+
+- No Prop Drilling: State management is handled via context, so you don't need to pass props down through multiple layers.
+- Re-rendering: Becuase of the context only children which are consuming the context will rerender whenever the state changes instead of entire tree.
+- Separation of Concerns: Keeps logic for tabs, tab buttons, and panels in separate components, making the code cleaner and easier to maintain.
+- Clear Structure: Components (Tabs, Tab, Panel) have a clear, focused responsibility, making it easier to understand each part.
+
+<h3 id="when-not-compound-components">When not to use Compound Components</h3>
+
+- Single Responsibility: The component doesn't require multiple subcomponents or shared state, and a simple component suffices.
+
+- Unnecessary Complexity: The use of context and multiple components adds unnecessary abstraction, making the code harder to follow.
+
+- Limited Scalability: If your component's structure is unlikely to grow or require reusable parts, simpler solutions may be more efficient.
+
+This Pattern is often used in building UI libraries such as [Radix UI](https://www.radix-ui.com/), [Reach UI](https://reach.tech/) and [Headless UI](https://headlessui.com/).
+
+<h2 id="conclusion">Conclusion</h2>
+
+Compound Components provide a clean, modular approach to managing complex UI components by separating concerns, reducing prop drilling, and improving reusability. However, they may introduce unnecessary complexity in simple use cases, so they should be used when the UI requires multiple subcomponents with shared state or behavior. Always assess the scale and complexity of your component before deciding if this pattern is the right choice.

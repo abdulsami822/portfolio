@@ -1,4 +1,5 @@
 import createMDX from "@next/mdx";
+import rehypeHighlight from "rehype-highlight";
 
 const nextConfig = {
   webpack(config) {
@@ -32,7 +33,9 @@ const nextConfig = {
 };
 
 const withMDX = createMDX({
-  // Add markdown plugins here, as desired
+  options: {
+    rehypePlugins: [rehypeHighlight],
+  },
 });
 
 // Merge MDX config with Next.js config
